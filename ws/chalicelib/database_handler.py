@@ -3,6 +3,7 @@ from abc import ABC
 import boto3
 import functools
 import abc
+import uuid
 
 def singleton(cls):
     """Make a class a Singleton class (only one instance)"""
@@ -56,6 +57,7 @@ class DynamoStorage(Storage, ABC):
     def store_record(self, connection_id, record):
         self.__records_table.put_item(
             Item={
+                'id': str(uuid.uuid4()),
                 'connection_id': connection_id,
                 'record': record
             }
