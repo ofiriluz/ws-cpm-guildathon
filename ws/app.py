@@ -2,7 +2,6 @@ from boto3.session import Session
 from chalice import Chalice
 from chalice import WebsocketDisconnectedError
 import database_handler as dh
-import os
 
 app = Chalice(app_name='test-websockets')
 app.experimental_feature_flags.update([
