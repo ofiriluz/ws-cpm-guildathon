@@ -1,7 +1,13 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from boto3.session import Session
 from chalice import Chalice
 from chalice import WebsocketDisconnectedError
-import database_handler as dh
+# import .database_handler as dh
+import os
+from chalicelib.database_handler import  DynamoStorage
 
 app = Chalice(app_name='test-websockets')
 app.experimental_feature_flags.update([
@@ -11,8 +17,10 @@ app.websocket_api.session = Session()
 
 # dynamo_handler = dh.DynamoStorage(os.environ.get('CONNECTIONS_TABLE', ''), os.environ.get('RECORDS_TABLE', ''))
 
-dynamo_handler = dh.DynamoStorage("WSPlaygroundConnections", "WSPlaygroundRecords")
+dynamo_handler = DynamoStorage("WSPlaygroundConnections", "WSPlaygroundRecords")
 
+records_table_name = os.environ.get('RECORDS_TABLE_NAME')
+connections_table_name = os.environ.get('CONNECTIONS_TABLE_NAME')
 
 
 @app.on_ws_connect()

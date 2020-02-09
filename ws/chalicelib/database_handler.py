@@ -1,7 +1,6 @@
 from abc import ABC
 
 import boto3
-from boto3.dynamodb.conditions import Key
 import functools
 import abc
 

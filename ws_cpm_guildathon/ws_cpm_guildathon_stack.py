@@ -20,6 +20,10 @@ class WsCpmGuildathonStack(core.Stack):
                                                  type=dynamodb.AttributeType.STRING),
                                                  billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
                                                  removal_policy=core.RemovalPolicy.DESTROY)
+
+        core.CfnOutput(self, id="ConnectionsTableName", value=self.connections_table.table_name)
+        core.CfnOutput(self, id="RecordsTableName", value=self.records_table.table_name)
+
         self.service_role = self._create_service_role()
 
         chalice_dir = os.path.join(os.path.dirname(__file__), os.pardir, "ws")
@@ -36,7 +40,10 @@ class WsCpmGuildathonStack(core.Stack):
                 'api_handler': {
                     'manage_iam_role': False,
                     'iam_role_arn': self.service_role.role_arn,
-                    'environment_variables': {  },
+                    'environment_variables': {
+                        'RECORDS_TABLE_NAME': self.records_table.table_name,
+                        'CONNECTIONS_TABLE_NAME': self.connections_table.table_name,
+                    },
                     'lambda_memory_size': 128,
                     'lambda_timeout': 10
                 }
