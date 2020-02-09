@@ -9,15 +9,15 @@ class WsCpmGuildathonStack(core.Stack):
 
         self.connections_table = dynamodb.Table(self, f"WSPlaygroundConnections",
                                              partition_key=dynamodb.Attribute(
-                                                 name="connection_id",
-                                                 type=dynamodb.AttributeType.STRING),
+                                             name="connection_id",
+                                             type=dynamodb.AttributeType.STRING),
                                              billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
                                              removal_policy=core.RemovalPolicy.DESTROY)
 
         self.connections_table = dynamodb.Table(self, f"WSPlaygroundRecords",
                                              partition_key=dynamodb.Attribute(
-                                                 name="connection_id",
-                                                 type=dynamodb.AttributeType.STRING),
+                                             name="connection_id",
+                                             type=dynamodb.AttributeType.STRING),
                                              billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
                                              removal_policy=core.RemovalPolicy.DESTROY)
         self.service_role = create_service_role()

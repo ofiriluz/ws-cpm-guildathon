@@ -1,29 +1,38 @@
+from boto3.session import Session
 from chalice import Chalice
+from chalice import WebsocketDisconnectedError
+import database_handler as dh
+import os
 
-app = Chalice(app_name='ws')
+app = Chalice(app_name='test-websockets')
+app.experimental_feature_flags.update([
+    'WEBSOCKETS',
+])
+app.websocket_api.session = Session()
+
+# dynamo_handler = dh.DynamoStorage(os.environ.get('CONNECTIONS_TABLE', ''), os.environ.get('RECORDS_TABLE', ''))
+
+dynamo_handler = dh.DynamoStorage("WSPlaygroundConnections", "WSPlaygroundRecords")
 
 
-@app.route('/')
-def index():
-    return {'hello': 'world'}
+
+@app.on_ws_connect()
+def connect(event):
+    dynamo_handler.store_connection(event.connection_id)
 
 
-# The view function above will return {"hello": "world"}
-# whenever you make an HTTP GET request to '/'.
-#
-# Here are a few more examples:
-#
-# @app.route('/hello/{name}')
-# def hello_name(name):
-#    # '/hello/james' -> {"hello": "james"}
-#    return {'hello': name}
-#
-# @app.route('/users', methods=['POST'])
-# def create_user():
-#     # This is the JSON body the user sent in their POST request.
-#     user_as_json = app.current_request.json_body
-#     # We'll echo the json body back to the user in a 'user' key.
-#     return {'user': user_as_json}
-#
-# See the README documentation for more examples.
-#
+@app.on_ws_message()
+def message(event):
+    try:
+        dynamo_handler.store_record(event.connection_id, event.body)
+        app.websocket_api.send(
+            connection_id=event.connection_id,
+            message="Record has been stored",
+        )
+    except WebsocketDisconnectedError as e:
+        dynamo_handler.delete_connection(event.connection_id)
+
+
+@app.on_ws_disconnect()
+def disconnect(event):
+    dynamo_handler.delete_connection(event.connection_id)
