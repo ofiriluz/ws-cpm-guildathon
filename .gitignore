@@ -3,3 +3,4 @@
 cdk.out
 __pycache__
 .chalice
+chalice.out

@@ -19,6 +19,8 @@ app.websocket_api.session = Session()
 
 dynamo_handler = DynamoStorage("ws-cpm-guildathon-WSPlaygroundConnectionsB3497657-N5E0FPEH7XZM", "ws-cpm-guildathon-WSPlaygroundRecords99A7CB0F-1687NPRAAHO57")
 
+records_table_name = os.environ.get('RECORDS_TABLE_NAME')
+connections_table_name = os.environ.get('CONNECTIONS_TABLE_NAME')
 
 
 @app.on_ws_connect()
