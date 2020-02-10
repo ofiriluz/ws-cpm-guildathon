@@ -32,6 +32,10 @@ class Storage(object):
     def store_record(self, connection_id, record):
         pass
 
+    @abc.abstractmethod
+    def list_connections(self):
+        pass
+
 
 @singleton
 class DynamoStorage(Storage, ABC):
@@ -62,3 +66,7 @@ class DynamoStorage(Storage, ABC):
                 'record': record
             }
         )
+
+    def list_connections(self):
+        response = self.__connections_table.scan()
+        return response['Items']
