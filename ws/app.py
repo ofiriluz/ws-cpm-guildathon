@@ -28,7 +28,7 @@ def connect(event):
     dynamo_handler.store_connection(event.connection_id)
 
 
-@app.on_ws_message()
+@app._create_registration_function(handler_type="on_ws_message", name=None, registration_kwargs={'route_key': 'test'})
 def message(event):
     try:
         dynamo_handler.store_record(event.connection_id, event.body)
